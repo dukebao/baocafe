@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Play Coffee House - Drink Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --board-bg: #121212;
+      --chalk: #f3f3f3;
+      --accent: #ffd18a;
+      --muted: #b3b3b3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #2f2f2f 0, #050505 55%);
+      color: var(--chalk);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .board {
+      max-width: 720px;
+      width: 100%;
+      background: var(--board-bg);
+      border-radius: 18px;
+      padding: 28px 24px 22px;
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.8),
+        0 0 0 10px rgba(0, 0, 0, 0.5),
+        0 0 0 12px #5b4636;
+      border: 1px solid #333;
+    }
+
+    .board-inner {
+      border: 1px dashed #555;
+      border-radius: 12px;
+      padding: 20px 18px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .chalk-divider {
+      width: 80px;
+      height: 2px;
+      background: var(--accent);
+      margin: 14px auto 10px;
+      box-shadow: 0 0 8px rgba(255, 209, 138, 0.7);
+    }
+
+    /* Single-column layout */
+    .menu-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-align: center;
+      /* ⬅ Center the section headers */
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: flex-start;
+      align-items: baseline;
+      margin-bottom: 3px;
+      font-size: 0.95rem;
+    }
+
+    .item-name {
+      padding-right: 8px;
+    }
+
+    .item-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .bottom-note {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="board">
+    <div class="board-inner">
+      <header>
+        <h1>Bao's Cafe </h1>
+        <p>Drink Menu</p>
+      </header>
+
+      <div class="chalk-divider"></div>
+
+      <!-- Menu will be injected here -->
+      <div class="menu-grid" id="menu"></div>
+
+      <p class="bottom-note">
+        Choose your milk from the Milk Selections · Customize sweetness on Bao's mood · No Latte art guaranteed
+      </p>
+    </div>
+  </div>
+
+  <!-- INI-style menu data: edit this block only -->
+  <script id="menu-ini" type="text/plain">
+; Format:
+; [Section name]
+; Item name | Optional description
+
+[Hot Coffee]
+Latte | Vanilla, Caramel, or Hazelnut ... ask Bao for more flavours!
+Flat White | Smooth & velvety
+Cappuccino | Foamy & classic
+Matcha Latte | Japanese matcha with steamed milk
+Chai Latte | Spiced tea with milk
+Mocha with Real Chocolate | Espresso + steamed milk + real chocolate
+
+[Iced]
+Everything from Hot Coffee | Any hot coffee drink served over ice
+Salted Caramel Cold Foam Iced Latte | Iced latte topped with salted caramel cold foam
+Salted Cold Foam Matcha Latte | Iced matcha latte with salted cold foam
+Diet Coke | Served chilled
+
+[Shaken Drinks]
+Iced Green Tea Lemonade | Citrusy, refreshing
+Iced Raspberry Black Tea | Fruity black tea over ice
+
+[Milk Selections]
+Regular Milk 2% | House standard
+Almond Milk | Nutty, dairy-free
+Oat Milk | Creamy, dairy-free
+Whole Milk Lactose Free（由美姊最愛） | Rich, gentle on the stomach
+
+[Toppings]
+Coco Powder | Sprinkle on top
+Whipped Cream | Extra creamy topping
+Confetti Sprinkles | Colorful fun
+Cinnamon Dust | Warm spice
+Mushmellow | Soft and sweet
+Macha Powder | Earthy green tea flavor
+蜂窩焦糖 | 感謝小童子子
+
+  </script>
+
+  <script>
+    // Simple INI parser:
+    // [Section Name]
+    // Item name | Optional description
+    function parseIni(text) {
+      const sections = {};
+      let currentSection = null;
+
+      const lines = text.split(/\r?\n/);
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith(";") || line.startsWith("#")) {
+          continue; // skip comments & empty lines
+        }
+
+        // Section header
+        if (line.startsWith("[") && line.endsWith("]")) {
+          const sectionName = line.slice(1, -1).trim();
+          if (sectionName) {
+            currentSection = sectionName;
+            if (!sections[currentSection]) {
+              sections[currentSection] = [];
+            }
+          }
+          continue;
+        }
+
+        // Item line
+        if (currentSection) {
+          const parts = line.split("|");
+          const name = (parts[0] || "").trim();
+          const desc = (parts[1] || "").trim();
+          if (name) {
+            sections[currentSection].push({ name, desc });
+          }
+        }
+      }
+
+      return sections;
+    }
+
+    function renderMenu(sections, container) {
+      container.innerHTML = "";
+      const sectionNames = Object.keys(sections);
+
+      for (const sectionName of sectionNames) {
+        const sectionEl = document.createElement("section");
+
+        const titleEl = document.createElement("h2");
+        titleEl.className = "section-title";
+        titleEl.textContent = sectionName;
+        sectionEl.appendChild(titleEl);
+
+        const items = sections[sectionName];
+        for (const item of items) {
+          const itemRow = document.createElement("div");
+          itemRow.className = "menu-item";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "item-name";
+          nameSpan.textContent = item.name;
+
+          itemRow.appendChild(nameSpan);
+          sectionEl.appendChild(itemRow);
+
+          if (item.desc) {
+            const descDiv = document.createElement("div");
+            descDiv.className = "item-desc";
+            descDiv.textContent = item.desc;
+            sectionEl.appendChild(descDiv);
+          }
+        }
+
+        container.appendChild(sectionEl);
+      }
+    }
+
+    (function init() {
+      const iniText = document.getElementById("menu-ini").textContent;
+      const sections = parseIni(iniText);
+      const menuContainer = document.getElementById("menu");
+      renderMenu(sections, menuContainer);
+    })();
+  </script>
+</body>
+
+</html>
