@@ -76,6 +76,46 @@
       box-shadow: 0 0 8px rgba(255, 209, 138, 0.7);
     }
 
+    .order-actions {
+      display: flex;
+      justify-content: center;
+      margin: 0 0 18px;
+    }
+
+    .order-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 22px;
+      border: 1px solid rgba(255, 209, 138, 0.75);
+      border-radius: 999px;
+      background: var(--accent);
+      color: #15110c;
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+      text-transform: uppercase;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        background 140ms ease;
+    }
+
+    .order-button:hover,
+    .order-button:focus-visible {
+      background: #ffe0ab;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .order-button:focus-visible {
+      outline: 2px solid var(--chalk);
+      outline-offset: 4px;
+    }
+
     /* Single-column layout */
     .menu-grid {
       display: flex;
@@ -129,6 +169,13 @@
       </header>
 
       <div class="chalk-divider"></div>
+
+      <div class="order-actions">
+        <a
+          class="order-button"
+          href="/order"
+        >Order Now</a>
+      </div>
 
       <!-- Menu will be injected here -->
       <div class="menu-grid" id="menu"></div>
