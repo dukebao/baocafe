@@ -1,28 +1,16 @@
 {
-  "rewrites": [
+  "crons": [
     {
-      "source": "/order",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/order/:path*",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/barista",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/barista/:path*",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/admin",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/admin/:path*",
-      "destination": "/app.html"
+      "path": "/api/keep-alive",
+      "schedule": "23 16 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/order", "destination": "/app.html" },
+    { "source": "/order/:path*", "destination": "/app.html" },
+    { "source": "/barista", "destination": "/app.html" },
+    { "source": "/barista/:path*", "destination": "/app.html" },
+    { "source": "/admin", "destination": "/app.html" },
+    { "source": "/admin/:path*", "destination": "/app.html" }
   ]
 }
